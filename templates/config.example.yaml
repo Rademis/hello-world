@@ -1,0 +1,13 @@
+# Copia in profilo/config.yaml
+soglia_match: 70
+gap_obbligatorio: chiedi        # chiedi | scarta
+tono_lettera: professionale     # professionale | diretto | caloroso
+linkedin:
+  abilitato: true
+  max_pagine_giorno: 20
+invio:
+  approvazione: sempre          # sempre | solo_esterni | mai
+  max_al_giorno: 10
+  pausa_secondi: [5, 20]
+report:
+  google_sheet_id: ""           # opzionale

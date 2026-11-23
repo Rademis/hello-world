@@ -1,0 +1,6 @@
+# Dati personali: mai su git
+profilo/*
+!profilo/.gitkeep
+data/*
+!data/.gitkeep
+.env

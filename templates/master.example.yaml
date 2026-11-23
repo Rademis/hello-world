@@ -1,0 +1,71 @@
+# Copia in profilo/master.yaml. Unica fonte di verità per CV, lettere e form.
+anagrafica:
+  nome: ""
+  email: ""
+  telefono: ""
+  citta: ""
+  linkedin: ""
+  sito: ""
+
+esperienze:
+  - id: exp1
+    azienda: ""
+    ruolo: ""
+    inizio: "2021-03"
+    fine: "presente"
+    luogo: ""
+    team: ""            # es. "5 persone, riporto al CTO"
+    confermato: true
+    risultati:
+      - id: exp1.b1
+        testo: "Ridotto del 30% il tempo di rilascio automatizzando le pipeline CI/CD"
+        metrica: "30% tempo di rilascio"   # solo numeri forniti dall'utente
+        competenze: [sk.cicd, sk.github_actions]
+        confermato: true
+
+formazione:
+  - id: edu1
+    titolo: ""
+    istituto: ""
+    anno: ""
+
+certificazioni: []
+lingue:
+  - { lingua: Italiano, livello: madrelingua }
+  - { lingua: Inglese, livello: C1 }
+
+competenze:
+  - id: sk.python
+    nome: Python
+    livello: quotidiano     # esperto | quotidiano | base | studiata
+    anni: 4
+    evidenza: [exp1.b1]
+    sinonimi: []            # termini equivalenti accettabili negli annunci
+
+progetti: []
+complementari: []           # volontariato, side project, soft skill con esempio
+
+preferenze:
+  ruoli: []
+  seniority: []
+  luoghi: []
+  remoto: ibrido            # remoto | ibrido | in_sede | indifferente
+  ral_minima: null
+  contratti: [indeterminato]
+  settori_esclusi: []
+  motivazioni: ""           # cosa cerchi davvero, usato nelle lettere
+
+form:
+  permesso_lavoro_ue: true
+  richiede_sponsorship: false
+  disponibile_trasferimento: false
+  trasferte: "fino al 20%"
+  preavviso: "1 mese"
+  disponibile_da: ""
+  patente: B
+
+banca_risposte:
+  - domanda: "Perché vuoi lasciare il tuo lavoro attuale?"
+    risposta: ""
+  - domanda: "Aspettative economiche"
+    risposta: ""
