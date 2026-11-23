@@ -1,12 +1,13 @@
 # Copia in profilo/config.yaml
 soglia_match: 70
 gap_obbligatorio: chiedi        # chiedi | scarta
+stime_stipendio: false         # true = mostra stime da fonti pubbliche, marcate come "stima"
 tono_lettera: professionale     # professionale | diretto | caloroso
 linkedin:
-  abilitato: true
+  ricerca: true                 # sola lettura; l'invio su LinkedIn è sempre manuale
   max_pagine_giorno: 20
-invio:
-  approvazione: sempre          # sempre | solo_esterni | mai
+invio:                          # solo portali esterni
+  approvazione: sempre          # sempre = si ferma a "pronta" | mai = invia da solo
   max_al_giorno: 10
   pausa_secondi: [5, 20]
 report:

@@ -7,4 +7,7 @@ compatibili ogni giorno, genera CV e lettere su misura senza invenzioni e invia 
 - Skill: [.claude/skills/](.claude/skills/)
 - Template profilo/config: [templates/](templates/)
 
+Dashboard: `python3 dashboard/server.py` → http://127.0.0.1:8765
+(demo: `python3 dashboard/demo_seed.py && python3 dashboard/server.py --db data/demo.sqlite`)
+
 Avvio rapido: metti il CV in `profilo/`, poi in Claude Code chiedi "avvia l'onboarding".

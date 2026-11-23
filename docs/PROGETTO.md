@@ -2,7 +2,7 @@
 
 > Obiettivo: partire dal profilo LinkedIn e dal CV, intervistare l'utente per completare il quadro,
 > trovare ogni giorno le offerte compatibili, generare CV e lettera motivazionale su misura
-> **senza mai dichiarare cose non vere**, e inviare la candidatura (LinkedIn Easy Apply o portale esterno).
+> **senza mai dichiarare cose non vere**, mostrare le offerte in una dashboard dove scegli tu, poi inviare in automatico sui portali esterni e prepararti tutto per l'invio manuale su LinkedIn.
 
 ---
 
@@ -12,9 +12,9 @@
   [Prohibited software and extensions](https://www.linkedin.com/help/linkedin/answer/a1341387) vietano bot
   e accessi automatizzati; chi li usa rischia limitazioni temporanee o la chiusura dell'account.
   LinkedIn non offre API pubbliche per candidarsi: ogni "auto-apply" lavora dentro la tua sessione loggata.
-- **Conseguenza progettuale:** l'agente è pensato in modalità **semi-automatica** ("human-in-the-loop"):
-  prepara tutto da solo, ma l'invio su LinkedIn avviene con volumi bassi, ritmo umano e — di default —
-  con la tua approvazione. L'automazione piena è un'opzione che attivi tu, sapendo il rischio.
+- **Conseguenza progettuale (decisione presa):** su LinkedIn l'agente **non invia mai**. Legge le offerte a
+  ritmo umano, prepara i documenti e ti dà il link: l'invio lo fai tu con un click. L'invio automatico
+  avviene solo sui portali esterni (via API o browser), dopo la tua scelta nella dashboard.
 - **Dove possibile si aggira LinkedIn:** molte offerte rimandano a ATS aziendali (Greenhouse, Lever, Ashby,
   Workday, SmartRecruiters). Greenhouse, Lever e Ashby hanno API pubbliche di lettura degli annunci,
   quindi la *ricerca* può avvenire lì senza toccare LinkedIn.
@@ -22,12 +22,46 @@
 
 ---
 
+## 1-bis. Flusso con dashboard (versione attuale)
+
+```
+ ricerca + valutazione (ogni giorno, automatico)
+                │
+                ▼
+  ┌──────────── DASHBOARD (python3 dashboard/server.py) ────────────┐
+  │ compatibilità · coerenza carriera · stipendio · benefit ·        │
+  │ luogo · remoto/ibrido/sede · canale (LinkedIn / portale)         │
+  │            [ Metti in pipeline ]   [ Scarta ]                    │
+  └──────────────────────────┬───────────────────────────────────────┘
+                             ▼ stato "selezionata"
+          prepara-candidature: CV + lettera verificati + risposte
+                 │                                │
+       canale LinkedIn                     portale esterno
+                 ▼                                ▼
+     "pronta_linkedin": link               "pronta" → [Approva invio]
+     + documenti da caricare               → invio via API o browser
+     → invii tu, poi "Segna inviata"       → "inviata" (o "in_attesa"
+                                              se CAPTCHA / domanda aperta)
+```
+
+![Dashboard con dati fittizi](dashboard-demo.png)
+
+La dashboard è un piccolo server locale (solo libreria standard Python, ascolta su 127.0.0.1) che legge
+`data/jobs.sqlite`. Colonne: compatibilità 0-100 con numero di gap, coerenza col percorso di carriera
+(passo avanti / laterale / passo indietro / cambio direzione, con spiegazione), stipendio (solo se indicato
+nell'annuncio; le stime opzionali sono marcate "stima"), benefit citati, luogo e modalità con giorni di smart
+working, canale e stato. Filtri per soglia di match, modalità, canale, presenza dello stipendio; ordinamento
+per colonna; selezione multipla. Il pulsante "Prepara ora" (opzione `--avvia-pipeline`) lancia subito
+`claude -p /prepara-candidature`; altrimenti le selezionate vengono lavorate alla routine successiva.
+
+Prova con dati fittizi: `python3 dashboard/demo_seed.py && python3 dashboard/server.py --db data/demo.sqlite`.
+
 ## 2. Architettura a fasi
 
 ```
 ┌──────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────────┐   ┌──────────────┐   ┌────────────┐
 │ 0 ONBOARDING │ → │ 1 RICERCA    │ → │ 2 VALUTA    │ → │ 3 ADATTA CV  │ → │ 5 INVIO      │ → │ 6 REPORT   │
-│ CV+LinkedIn+ │   │ LinkedIn+ATS │   │ match 0-100 │   │ 4 LETTERA    │   │ Easy Apply / │   │ tracker +  │
+│ CV+LinkedIn+ │   │ LinkedIn+ATS │   │ match 0-100 │   │ 4 LETTERA    │   │ link LinkedIn│   │ tracker +  │
 │ intervista   │   │ dedup SQLite │   │ filtri duri │   │ + verifica   │   │ portale ATS  │   │ riepilogo  │
 └──────┬───────┘   └──────────────┘   └─────────────┘   └──────────────┘   └──────────────┘   └────────────┘
        ▼
@@ -83,7 +117,8 @@ Stesse regole del CV. In più: breve ricerca sull'azienda (sito, notizie recenti
 specifiche e verificabili. Lunghezza 200–300 parole, lingua dell'annuncio, tono configurabile.
 
 ### Fase 5 — Invio
-- **LinkedIn Easy Apply:** caricamento CV/lettera, risposte ai campi con la banca risposte.
+- **LinkedIn:** nessun invio automatico. L'offerta passa a `pronta_linkedin`; in dashboard trovi il link,
+  CV, lettera e `risposte.md` da copiare nel form Easy Apply.
 - **Portale esterno:** Playwright MCP (`browser_fill_form`, `browser_select_option`, upload file).
   Greenhouse e Lever sono i più prevedibili; Workday richiede account e passaggi multipli (supporto
   "best effort").
@@ -154,11 +189,16 @@ linkedin-mcp-server per la ricerca su LinkedIn.
 .claude/skills/
   onboarding-intervista/SKILL.md   fase 0
   ricerca-offerte/SKILL.md         fase 1
-  valuta-match/SKILL.md            fase 2
+  valuta-match/SKILL.md            fase 2 (+ coerenza carriera, stipendio, benefit, modalità)
+  prepara-candidature/SKILL.md     pipeline sulle offerte selezionate in dashboard
   adatta-cv/SKILL.md               fase 3 (+ verificatore)
   lettera-motivazionale/SKILL.md   fase 4
   invia-candidatura/SKILL.md       fase 5
   candidature-giornaliere/SKILL.md  fase 6 + orchestrazione giornaliera
+dashboard/
+  server.py, index.html            dashboard locale
+  demo_seed.py                     dati fittizi per provarla
+db/schema.sql                      schema di data/jobs.sqlite
 templates/
   master.example.yaml              schema della banca dei fatti
   config.example.yaml              soglie, limiti, modalità approvazione
@@ -171,6 +211,6 @@ data/      (privato, gitignored)   jobs.sqlite, documenti generati, screenshot, 
 1. **Settimana 1:** onboarding + `master.yaml` + CV/lettera su misura per annunci incollati a mano
    (già utile da solo, zero rischi).
 2. **Settimana 2:** ricerca su ATS diretti + valutazione + report giornaliero schedulato.
-3. **Settimana 3:** invio su Greenhouse/Lever con approvazione.
-4. **Settimana 4:** ricerca e Easy Apply su LinkedIn, volumi bassi, con approvazione.
+3. **Settimana 3:** dashboard + pipeline sulle selezionate, LinkedIn con invio manuale.
+4. **Settimana 4:** invio automatico su Greenhouse/Lever/Ashby con approvazione, poi Workday.
 5. Poi: metriche (tasso di risposta per tipo di CV), miglioramento dei prompt.

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offerte compatibili</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f0f2f5; --border: #dfe3e8;
+  --text: #1b1f24; --muted: #5f6b7a; --accent: #2f5bd3; --accent-text: #ffffff;
+  --good: #1f7a4d; --good-bg: #e3f4ea; --mid: #8a5a00; --mid-bg: #fbf0d9;
+  --bad: #b3261e; --bad-bg: #fbe5e3; --info-bg: #e7edfb; --li: #0a66c2;
+  --radius: 10px; --shadow: 0 1px 2px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111418; --surface: #1a1e24; --surface-2: #232830; --border: #2e353f;
+    --text: #e6e9ee; --muted: #9aa5b4; --accent: #7a9bff; --accent-text: #0d1220;
+    --good: #6fd19c; --good-bg: #183326; --mid: #f0c36a; --mid-bg: #352a12;
+    --bad: #ff8a80; --bad-bg: #3a1c1a; --info-bg: #1d2740; --li: #5aa9ff;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111418; --surface: #1a1e24; --surface-2: #232830; --border: #2e353f;
+  --text: #e6e9ee; --muted: #9aa5b4; --accent: #7a9bff; --accent-text: #0d1220;
+  --good: #6fd19c; --good-bg: #183326; --mid: #f0c36a; --mid-bg: #352a12;
+  --bad: #ff8a80; --bad-bg: #3a1c1a; --info-bg: #1d2740; --li: #5aa9ff;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { padding: 20px 16px 8px; max-width: 1280px; margin: 0 auto; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; }
+main { max-width: 1280px; margin: 0 auto; padding: 0 16px 96px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); }
+.kpi b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--muted); font-size: 12px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.tab { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px;
+  padding: 6px 12px; cursor: pointer; font: inherit; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.tab .n { opacity: .75; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.filters input[type=search], .filters select { font: inherit; color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; }
+.filters input[type=search] { flex: 1 1 220px; min-width: 0; }
+.filters label { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+th, td { padding: 10px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--surface-2); white-space: nowrap; }
+th[data-sort] { cursor: pointer; user-select: none; }
+th[data-sort]:hover { color: var(--text); }
+tr:last-child td { border-bottom: 0; }
+tr.job:hover td { background: var(--surface-2); }
+.title { min-width: 180px; }
+.title a { color: var(--text); font-weight: 600; text-decoration: none; }
+.title a:hover { text-decoration: underline; }
+.company { color: var(--muted); }
+.score { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+.bar { flex: 1; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 3px; }
+.num { font-variant-numeric: tabular-nums; font-weight: 600; width: 28px; text-align: right; }
+.lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.chip { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid var(--border); margin: 0 4px 4px 0; white-space: nowrap; }
+.chip.good { background: var(--good-bg); color: var(--good); border-color: transparent; }
+.chip.mid { background: var(--mid-bg); color: var(--mid); border-color: transparent; }
+.chip.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.chip.info { background: var(--info-bg); color: var(--accent); border-color: transparent; }
+.chip.li { color: var(--li); }
+.salary { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.muted { color: var(--muted); }
+button.btn, a.btn { font: inherit; border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 8px; padding: 6px 10px; cursor: pointer; text-decoration: none; display: inline-block; white-space: nowrap; }
+button.btn.primary, a.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+a.btn.li { background: var(--li); color: #fff; border-color: var(--li); }
+button.btn:disabled { opacity: .5; cursor: not-allowed; }
+.detail td { background: var(--surface-2); }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.detail h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.detail ul { margin: 0; padding-left: 18px; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.bulk { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  border-radius: 12px; padding: 10px 12px; display: none; gap: 8px; align-items: center; z-index: 10;
+  max-width: calc(100% - 32px); flex-wrap: wrap; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+.bulk.on { display: flex; }
+.bulk .btn { border-color: transparent; }
+.empty { text-align: center; color: var(--muted); padding: 40px 16px; }
+.toast { position: fixed; top: 16px; right: 16px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; box-shadow: 0 6px 24px rgba(0,0,0,.15); display: none; z-index: 20; max-width: calc(100% - 32px); }
+.toast.on { display: block; }
+input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+
+@media (max-width: 860px) {
+  table, tbody, tr, td { display: block; width: 100%; }
+  thead { display: none; }
+  table { background: transparent; border: 0; box-shadow: none; }
+  tr.job { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; padding: 6px 0; }
+  tr.job td { border: 0; padding: 6px 12px; }
+  tr.job td[data-l]::before { content: attr(data-l); display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  tr.detail { margin: -10px 0 10px; }
+  tr.detail td { border-radius: 0 0 var(--radius) var(--radius); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Offerte compatibili</h1>
+  <p class="sub">Scegli le offerte interessanti e mettile in pipeline: l'agente prepara CV e lettera, invia da solo sui portali esterni e ti lascia il link per LinkedIn.</p>
+</header>
+<main>
+  <section class="kpis" id="kpis"></section>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <div class="filters">
+    <input type="search" id="q" placeholder="Cerca ruolo, azienda, luogo, benefit…" aria-label="Cerca">
+    <label>Match ≥ <select id="minMatch"><option value="0">tutti</option><option>60</option><option selected>70</option><option>80</option><option>90</option></select></label>
+    <label>Modalità <select id="modalita"><option value="">tutte</option><option value="remoto">Remoto</option><option value="ibrido">Ibrido</option><option value="sede">In sede</option><option value="smart">Remoto o ibrido</option></select></label>
+    <label>Canale <select id="canale"><option value="">tutti</option><option value="linkedin">LinkedIn</option><option value="esterno">Portale esterno</option></select></label>
+    <label><input type="checkbox" id="soloStip"> con stipendio</label>
+  </div>
+  <table>
+    <thead><tr>
+      <th style="width:28px"><input type="checkbox" id="all" aria-label="Seleziona tutte"></th>
+      <th data-sort="titolo">Offerta</th>
+      <th data-sort="match">Compatibilità</th>
+      <th data-sort="coerenza">Coerenza carriera</th>
+      <th data-sort="stip">Stipendio</th>
+      <th>Benefit</th>
+      <th data-sort="luogo">Luogo e modalità</th>
+      <th>Canale e stato</th>
+      <th></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="empty" id="empty" hidden>Nessuna offerta con questi filtri.</div>
+</main>
+<div class="bulk" id="bulk">
+  <span id="bulkN"></span>
+  <button class="btn primary" data-bulk="selezionata">Metti in pipeline</button>
+  <button class="btn" data-bulk="scartata">Scarta</button>
+  <button class="btn" data-bulk="archiviata">Archivia</button>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const TABS = [
+  { k: "valutare", t: "Da valutare", s: ["valutata"] },
+  { k: "pipeline", t: "In pipeline", s: ["selezionata", "in_preparazione", "approvata", "in_attesa"] },
+  { k: "pronte", t: "Pronte", s: ["pronta", "pronta_linkedin"] },
+  { k: "inviate", t: "Inviate", s: ["inviata", "colloquio", "rifiutata"] },
+  { k: "archivio", t: "Scartate / archiviate", s: ["scartata", "archiviata"] },
+  { k: "tutte", t: "Tutte", s: null },
+];
+const STATO = {
+  trovata: ["Da valutare", ""], valutata: ["Da decidere", "info"], selezionata: ["In coda pipeline", "mid"],
+  in_preparazione: ["Documenti in preparazione", "mid"], in_attesa: ["Serve il tuo intervento", "bad"],
+  pronta: ["Pronta: approva l'invio", "good"], approvata: ["Invio approvato", "mid"], pronta_linkedin: ["Pronta: invia su LinkedIn", "good"],
+  inviata: ["Inviata", "good"], colloquio: ["Colloquio", "good"], rifiutata: ["Rifiutata", ""],
+  scartata: ["Scartata", ""], archiviata: ["Archiviata", ""],
+};
+const COER = { passo_avanti: "Passo avanti", laterale: "Laterale", passo_indietro: "Passo indietro", cambio_direzione: "Cambio direzione" };
+const MOD = { remoto: "Remoto", ibrido: "Ibrido", sede: "In sede", non_indicato: "Modalità n.d." };
+
+let jobs = [], tab = "valutare", sortKey = "match", sortDir = -1, open = new Set(), sel = new Set(), canRun = false;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const isLi = (j) => j.tipo_candidatura === "linkedin";
+const annual = (j) => j.stip_max || j.stip_min ? ((j.stip_max || j.stip_min) * (j.stip_periodo === "mese" ? 13 : j.stip_periodo === "ora" ? 1700 : 1)) : -1;
+
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 3500); }
+
+async function load() {
+  try {
+    const r = await fetch("/api/jobs"); const d = await r.json();
+    jobs = d.jobs; canRun = d.avvia_pipeline; render();
+  } catch (e) { toast("Impossibile leggere le offerte: il server è avviato?"); }
+}
+async function setStato(ids, stato) {
+  const r = await fetch("/api/stato", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids, stato }) });
+  if (!r.ok) return toast("Errore nell'aggiornamento");
+  ids.forEach((id) => sel.delete(id));
+  toast(stato === "selezionata" ? `${ids.length} offerte messe in pipeline` : "Aggiornato");
+  load();
+}
+async function runPipeline() {
+  const r = await fetch("/api/avvia-pipeline", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+  const d = await r.json(); toast(r.ok ? "Pipeline avviata: i documenti appariranno qui" : d.errore);
+}
+
+function scoreCell(v, extra) {
+  if (v == null) return `<span class="muted">—</span>`;
+  const c = v >= 80 ? "var(--good)" : v >= 65 ? "var(--mid)" : "var(--bad)";
+  return `<div class="score"><span class="num">${v}</span><span class="bar"><i style="width:${v}%;background:${c}"></i></span></div>${extra ? `<div class="lbl">${extra}</div>` : ""}`;
+}
+function salary(j) {
+  if (!j.stip_min && !j.stip_max) return `<span class="muted">Non indicato</span>`;
+  const f = (n) => n >= 1000 ? Math.round(n / 1000) + "k" : n;
+  const per = { anno: "/anno", mese: "/mese", ora: "/ora" }[j.stip_periodo] || "";
+  const range = j.stip_min && j.stip_max && j.stip_min !== j.stip_max ? `${f(j.stip_min)}–${f(j.stip_max)}` : f(j.stip_max || j.stip_min);
+  const est = (j.stip_fonte || "").startsWith("stima") ? ` <span class="chip mid" title="${esc(j.stip_fonte)}">stima</span>` : "";
+  return `<span class="salary">${esc(j.stip_valuta === "EUR" ? "€" : j.stip_valuta + " ")}${range}${per}</span>${est}`;
+}
+function modalita(j) {
+  const m = j.modalita || "non_indicato";
+  const cls = m === "remoto" ? "good" : m === "ibrido" ? "info" : "";
+  const g = m === "ibrido" && j.giorni_remoto ? ` · ${j.giorni_remoto} gg smart` : "";
+  return `<div>${esc(j.luogo || "—")}</div><span class="chip ${cls}">${MOD[m] || m}${g}</span>`;
+}
+function actions(j) {
+  const a = [];
+  if (j.stato === "valutata" || j.stato === "trovata") a.push(`<button class="btn primary" data-act="selezionata" data-id="${esc(j.id)}">In pipeline</button>`);
+  if (j.stato === "pronta_linkedin") {
+    a.push(`<a class="btn li" href="${esc(j.url_candidatura || j.url)}" target="_blank" rel="noopener">Apri su LinkedIn</a>`);
+    a.push(`<button class="btn" data-act="inviata" data-id="${esc(j.id)}">Segna inviata</button>`);
+  }
+  if (j.stato === "pronta") a.push(`<button class="btn primary" data-act="approvata" data-id="${esc(j.id)}">Approva invio</button>`);
+  if (j.stato === "in_attesa") a.push(`<a class="btn" href="${esc(j.url_candidatura || j.url)}" target="_blank" rel="noopener">Completa a mano</a>`);
+  if (j.stato === "inviata") a.push(`<button class="btn" data-act="colloquio" data-id="${esc(j.id)}">Colloquio</button>`);
+  a.push(`<button class="btn" data-toggle="${esc(j.id)}" aria-expanded="${open.has(j.id)}">${open.has(j.id) ? "Chiudi" : "Dettagli"}</button>`);
+  return `<div class="actions">${a.join("")}</div>`;
+}
+function detail(j) {
+  const li = (arr) => arr && arr.length ? `<ul>${arr.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : `<span class="muted">—</span>`;
+  const docs = j.documenti.length ? j.documenti.map((d) => `<a class="chip" href="/files/${encodeURIComponent(j.id)}/${encodeURIComponent(d)}" target="_blank">${esc(d)}</a>`).join("") : `<span class="muted">Ancora nessuno</span>`;
+  return `<tr class="detail"><td colspan="9"><div class="detail-grid">
+    <div><h4>Sintesi</h4>${esc(j.sintesi || "—")}<h4 style="margin-top:12px">Coerenza con il percorso</h4>${esc(j.coerenza_nota || "—")}</div>
+    <div><h4>Punti di forza</h4>${li(j.punti_forza)}</div>
+    <div><h4>Gap</h4>${li(j.gap)}</div>
+    <div><h4>Documenti</h4>${docs}${j.nota_stato ? `<h4 style="margin-top:12px">Nota</h4>${esc(j.nota_stato)}` : ""}
+      <h4 style="margin-top:12px">Annuncio</h4><a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.url)}</a></div>
+  </div></td></tr>`;
+}
+
+function filtered() {
+  const t = TABS.find((x) => x.k === tab), q = $("q").value.trim().toLowerCase();
+  const minM = +$("minMatch").value, mod = $("modalita").value, can = $("canale").value, soloS = $("soloStip").checked;
+  return jobs.filter((j) => {
+    if (t.s && !t.s.includes(j.stato)) return false;
+    if (tab === "valutare" && (j.match ?? 0) < minM) return false;
+    if (mod === "smart" ? !["remoto", "ibrido"].includes(j.modalita) : mod && j.modalita !== mod) return false;
+    if (can === "linkedin" && !isLi(j)) return false;
+    if (can === "esterno" && isLi(j)) return false;
+    if (soloS && !j.stip_min && !j.stip_max) return false;
+    if (q && ![j.titolo, j.azienda, j.luogo, ...(j.benefit || [])].join(" ").toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a, b) => {
+    const v = (j) => sortKey === "stip" ? annual(j) : j[sortKey] ?? (typeof j[sortKey] === "string" ? "" : -1);
+    const x = v(a), y = v(b);
+    return (typeof x === "string" ? x.localeCompare(y) : x - y) * sortDir;
+  });
+}
+
+function render() {
+  const count = (s) => jobs.filter((j) => !s || s.includes(j.stato)).length;
+  const daInviareLi = jobs.filter((j) => j.stato === "pronta_linkedin").length;
+  $("kpis").innerHTML = [
+    [count(["valutata"]), "da valutare"], [count(TABS[1].s), "in pipeline"],
+    [daInviareLi, "da inviare su LinkedIn"], [count(["in_attesa"]), "richiedono il tuo intervento"],
+    [count(TABS[3].s), "candidature inviate"],
+  ].map(([n, l]) => `<div class="kpi"><b>${n}</b><span>${l}</span></div>`).join("");
+  $("tabs").innerHTML = TABS.map((t) => `<button class="tab" role="tab" aria-selected="${t.k === tab}" data-tab="${t.k}">${t.t}<span class="n">${count(t.s)}</span></button>`).join("")
+    + (canRun ? `<button class="tab" id="run" title="Lancia ora /prepara-candidature">▶ Prepara ora</button>` : "");
+  const list = filtered();
+  $("empty").hidden = list.length > 0;
+  $("rows").innerHTML = list.map((j) => {
+    const [st, stc] = STATO[j.stato] || [j.stato, ""];
+    const canale = isLi(j) ? `<span class="chip li">LinkedIn</span>` : `<span class="chip">${esc(j.tipo_candidatura)}</span>`;
+    const ben = (j.benefit || []).slice(0, 4).map((b) => `<span class="chip">${esc(b)}</span>`).join("") + ((j.benefit || []).length > 4 ? `<span class="chip">+${j.benefit.length - 4}</span>` : "");
+    return `<tr class="job">
+      <td><input type="checkbox" data-sel="${esc(j.id)}" ${sel.has(j.id) ? "checked" : ""} aria-label="Seleziona ${esc(j.titolo)}"></td>
+      <td class="title" data-l="Offerta"><a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.titolo)}</a><div class="company">${esc(j.azienda)}</div></td>
+      <td data-l="Compatibilità">${scoreCell(j.match, (j.gap || []).length ? `${j.gap.length} gap` : "nessun gap")}</td>
+      <td data-l="Coerenza carriera">${scoreCell(j.coerenza, COER[j.coerenza_label] || "")}</td>
+      <td data-l="Stipendio">${salary(j)}</td>
+      <td data-l="Benefit">${ben || `<span class="muted">Non indicati</span>`}</td>
+      <td data-l="Luogo e modalità">${modalita(j)}</td>
+      <td data-l="Canale e stato">${canale}<br><span class="chip ${stc}">${st}</span></td>
+      <td>${actions(j)}</td>
+    </tr>${open.has(j.id) ? detail(j) : ""}`;
+  }).join("");
+  $("all").checked = list.length > 0 && list.every((j) => sel.has(j.id));
+  $("bulk").classList.toggle("on", sel.size > 0);
+  $("bulkN").textContent = `${sel.size} selezionate`;
+}
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-tab],[data-act],[data-toggle],[data-bulk],th[data-sort],#run");
+  if (!el) return;
+  if (el.id === "run") return runPipeline();
+  if (el.dataset.tab) { tab = el.dataset.tab; sel.clear(); return render(); }
+  if (el.dataset.act) return setStato([el.dataset.id], el.dataset.act);
+  if (el.dataset.bulk) return setStato([...sel], el.dataset.bulk);
+  if (el.dataset.toggle) { const id = el.dataset.toggle; open.has(id) ? open.delete(id) : open.add(id); return render(); }
+  if (el.dataset.sort) { const k = el.dataset.sort; sortDir = sortKey === k ? -sortDir : (k === "titolo" || k === "luogo" ? 1 : -1); sortKey = k; return render(); }
+});
+document.addEventListener("change", (e) => {
+  if (e.target.dataset.sel) { e.target.checked ? sel.add(e.target.dataset.sel) : sel.delete(e.target.dataset.sel); return render(); }
+  if (e.target.id === "all") { filtered().forEach((j) => e.target.checked ? sel.add(j.id) : sel.delete(j.id)); return render(); }
+  render();
+});
+$("q").addEventListener("input", render);
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

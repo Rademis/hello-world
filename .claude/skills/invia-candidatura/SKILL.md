@@ -1,26 +1,26 @@
 ---
 name: invia-candidatura
-description: Invia una candidatura pronta tramite LinkedIn Easy Apply o il portale esterno (Greenhouse, Lever, Workday, altri) compilando i campi con master.yaml e la banca risposte, con approvazione, limiti giornalieri e passaggio all'utente per CAPTCHA e domande sconosciute. Usare per candidature con stato "pronta".
+description: Invia una candidatura già preparata su un portale ESTERNO a LinkedIn (Greenhouse, Lever, Ashby, Workday, altri) via API o browser, compilando i campi con master.yaml e la banca risposte; passa all'utente CAPTCHA e domande sconosciute. Non invia mai su LinkedIn. Usare da prepara-candidature o per righe con stato "pronta".
 ---
 
-# Invio candidatura
+# Invio su portali esterni
 
-## Prima di iniziare
-- Controlla `config.invio.max_al_giorno` e quante ne sono già state inviate oggi: se raggiunto, fermati.
-- Modalità `config.invio.approvazione`: `sempre` (default) | `solo_esterni` | `mai`.
-  Se serve approvazione e l'utente non l'ha data → stato `in_attesa`, passa alla successiva.
+**Mai su LinkedIn**: le offerte con `tipo_candidatura='linkedin'` restano `pronta_linkedin` e le invia l'utente.
 
-## Compilazione (Playwright MCP, sessione browser dell'utente)
-1. Apri `url_candidatura`. Identifica il tipo (Easy Apply, Greenhouse, Lever, Workday, altro).
-2. Compila i campi da `anagrafica` e `form` di master.yaml. Carica CV e lettera generati.
-3. Domande di screening: usa `banca_risposte`. Per domande numeriche (anni di esperienza) usa SOLO i valori
-   registrati. Se nessuna risposta è adatta → **non indovinare**: stato `in_attesa`, registra la domanda in
-   `domande_aperte.md` per l'utente (che poi la aggiunge alla banca risposte).
-4. Prima di "Invia": screenshot in `data/applications/<id>/pre_invio.png` e rilettura di tutti i campi.
-5. Invia, attendi conferma, screenshot `conferma.png`, stato `inviata` con data.
+## Controlli iniziali
+- Limite `config.invio.max_al_giorno` non superato.
+- Documenti presenti in `data/applications/<id>/`.
 
-## Sicurezza
-- CAPTCHA, verifica identità, "attività insolita": **non aggirare mai**. Stato `in_attesa`, avvisa l'utente.
-- Non creare account sui portali senza consenso esplicito dell'utente; non salvare password in chiaro.
-- Pause casuali tra un'azione e l'altra; mai più di una candidatura in parallelo.
-- In caso di errore inatteso lascia il form senza inviare e registra il problema.
+## Canale
+1. **API** dove esiste un endpoint pubblico di candidatura per quell'ATS e l'azienda lo consente
+   (es. alcuni job board Ashby/Lever espongono il form via API): preferirla al browser.
+2. **Browser** (Playwright MCP) negli altri casi: apri `url_candidatura`, compila con `anagrafica`, `form`
+   e `banca_risposte`, carica CV e lettera (`browser_fill_form`, `browser_select_option`, upload).
+   - Workday e portali con registrazione: non creare account senza consenso esplicito → `in_attesa`.
+
+## Regole
+- Domanda senza risposta nella banca o numeri non registrati → non indovinare: `stato='in_attesa'`,
+  domanda in `nota_stato` e in `data/applications/<id>/domande_aperte.md`.
+- CAPTCHA o verifiche umane: mai aggirarli → `in_attesa` con link "Completa a mano" in dashboard.
+- Screenshot `pre_invio.png` prima dell'invio, `conferma.png` dopo; poi `stato='inviata'`, `aggiornato=now`.
+- Errore inatteso: non inviare, `in_attesa` con descrizione.

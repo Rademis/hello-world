@@ -45,6 +45,13 @@ competenze:
 progetti: []
 complementari: []           # volontariato, side project, soft skill con esempio
 
+carriera:
+  ruolo_attuale: ""
+  seniority_attuale: ""          # junior | mid | senior | lead | manager
+  obiettivo: ""                  # es. "tech lead in ambito dati entro 3 anni"
+  direzioni_accettate: []        # es. [data engineering, ML engineering]
+  direzioni_escluse: []          # es. [consulenza pre-sales]
+
 preferenze:
   ruoli: []
   seniority: []
