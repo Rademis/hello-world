@@ -37,7 +37,7 @@ lingue:
 competenze:
   - id: sk.python
     nome: Python
-    livello: quotidiano     # esperto | quotidiano | base | studiata
+    livello: buono          # esperto | buono | base | studiata
     anni: 4
     evidenza: [exp1.b1]
     sinonimi: []            # termini equivalenti accettabili negli annunci

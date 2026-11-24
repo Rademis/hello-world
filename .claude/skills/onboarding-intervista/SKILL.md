@@ -14,7 +14,7 @@ per tutte le altre skill. Niente in questo file deve essere dedotto senza confer
 2. Mostra all'utente un riepilogo e segnala le **incongruenze** tra CV e LinkedIn (date, titoli): chiedi quale è corretta.
 3. Intervista, **poche domande alla volta** (max 3-4 per messaggio), in quest'ordine:
    - Risultati misurabili per ogni esperienza (numeri, %, budget, team). Se l'utente non ricorda un numero, NON stimarlo.
-   - Livello reale di ogni competenza: `esperto | quotidiano | base | studiata`, con un'evidenza concreta.
+   - Livello reale di ogni competenza: `esperto | buono | base | studiata`, con un'evidenza concreta.
    - Competenze complementari assenti dal CV: strumenti, side project, volontariato, soft skill con un esempio.
    - Preferenze: ruoli target, seniority, città / remoto / ibrido, RAL minima, contratto, preavviso, settori esclusi.
    - Dati da form: permesso di lavoro, trasferimento, trasferte, patente, data di disponibilità.
