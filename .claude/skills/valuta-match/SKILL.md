@@ -8,8 +8,13 @@ description: Valuta le offerte con stato "trovata" contro profilo/master.yaml - 
 Scrive nelle colonne di `data/jobs.sqlite` (schema in `db/schema.sql`) tutto ciò che la dashboard mostra.
 
 ## 1. Filtri duri
-Da `preferenze` di master.yaml e `profilo/config.yaml`: luogo/remoto, RAL minima (se indicata), lingua,
-seniority, settori esclusi, permesso di lavoro. Se fallisce → `stato='scartata'`, motivo in `nota_stato`.
+Da `preferenze` di master.yaml e `profilo/config.yaml`: luogo/remoto, RAL, lingua, seniority, contratto,
+permesso di lavoro. Se fallisce → `stato='scartata'`, motivo in `nota_stato`.
+- RAL: scarta solo se l'annuncio dichiara un massimo sotto `preferenze.ral_filtro` (trattabile verso `ral_minima`).
+  Se la RAL non è indicata, non scartare.
+- Full remote: ammesso solo se la RAL dichiarata è >= `preferenze.full_remote_ral_minima`.
+- `settori_esclusi_soft`: non scartare, togli 15 punti alla coerenza e annotalo in `coerenza_nota`.
+- `tipo_azienda`: usa le priorità per la componente "preferenze" del match.
 
 ## 2. Dati dell'annuncio (estrarre SOLO ciò che è scritto)
 - `luogo`, `modalita` (`remoto | ibrido | sede | non_indicato`), `giorni_remoto` se specificati.
