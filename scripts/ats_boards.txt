@@ -29,3 +29,4 @@ lever contentsquare
 lever malt
 lever swile
 lever agicap
+lever jobgether   # aggregatore: annunci di aziende partner, spesso full remote
