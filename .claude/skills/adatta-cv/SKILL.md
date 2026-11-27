@@ -20,6 +20,6 @@ Avvia un subagent con SOLO `master.yaml` e `cv.draft.md` e questo compito:
 Rimuovi o riscrivi le righe non supportate e ripeti finché sono tutte SUPPORTATE (max 3 giri, poi chiedi all'utente).
 
 ## 3. Rendering
-Rimuovi le citazioni, applica `templates/cv.html` (una colonna, font standard, niente tabelle/immagini per
+Esegui `python3 scripts/render_cv.py data/applications/<id>/cv.draft.md CV_<Nome>_<Azienda>.pdf`: rimuove le citazioni e usa `templates/cv.css` (una colonna, font standard, niente tabelle/immagini per
 l'ATS), esporta in PDF con Playwright: `data/applications/<id>/CV_<Nome>_<Azienda>.pdf`. Massimo 2 pagine.
 Salva il log della verifica in `verifica_cv.md`.
