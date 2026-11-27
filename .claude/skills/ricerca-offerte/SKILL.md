@@ -6,7 +6,9 @@ description: Cerca nuove offerte di lavoro compatibili con profilo/master.yaml s
 # Ricerca offerte
 
 ## Fonti
-1. **ATS diretti** (preferiti, nessun rischio account) per le aziende in `profilo/aziende.yaml`:
+1. **ATS diretti** (preferiti, nessun rischio account): esegui `python3 scripts/cerca_ats.py`, che legge
+   `scripts/ats_boards.txt` e salva gli annunci pertinenti in `data/ats/ultimi.json`. Per allargare la copertura,
+   cerca sul web aziende tech con sede a Milano e aggiungi a `ats_boards.txt` quelle che rispondono sulle API:
    - Greenhouse: `https://boards-api.greenhouse.io/v1/boards/<board>/jobs?content=true`
    - Lever: `https://api.lever.co/v0/postings/<azienda>?mode=json`
    - Ashby: `https://api.ashbyhq.com/posting-api/job-board/<azienda>`
